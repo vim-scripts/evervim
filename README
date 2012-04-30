@@ -1,0 +1,49 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=4039
+
+evervim is plugin for edit evernote(http://www.evernote.com) on vim. 
+This plugin can edit evernote by markdown or law XML. 
+
+==============================================================================
+REQUIRES
+
+requires:
+ * python
+ * the "markdown" package for python
+ * vim with +python
+If your vim was compiled with +python, :echo has('python') will return 1.
+
+==============================================================================
+INSTALL
+
+Install files into Vim script directory.
+After install,
+
+	:EvervimSetup
+
+command is added. Do it for setting, and input evernote userID and password.
+
+==============================================================================
+USAGE
+
+Display NotebookList
+
+	:EvervimNotebookList
+
+NotebookList is displayed, choice one and <CR>,
+notes in notebook will be listed.
+choice one and <CR> too, the note will be displayd.
+
+Note is formatted
+ 1 line is Title
+ 2 line is Tags (comma deliminated)
+ 3 line after body
+
+
+==============================================================================
+DEVELOPMENT
+
+evervim developed on github. 
+
+Latest Version: 
+https://github.com/kakkyz81/evervim
+
