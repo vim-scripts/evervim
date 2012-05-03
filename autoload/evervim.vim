@@ -137,7 +137,7 @@ function! evervim#pageNext() " {{{
     setlocal nomodifiable
 endfunction
 "}}}
-"
+
 function! evervim#pagePrev() " {{{
     if &ft != 'notes' && &ft != 'notesbytag' && &ft != 'notesbyquery'
         return
@@ -195,9 +195,6 @@ function! evervim#createNoteBuf() " {{{
         call evervim#markdownBufSetup()
     endif
 
-    augroup evervimNote
-        autocmd!
-    augroup END
     augroup evervimCreate
         autocmd!
         autocmd BufWritePost <buffer> :call evervim#createNote()
@@ -253,7 +250,10 @@ function! evervim#noteBufSetup() " {{{
     if g:evervim_usemarkdown != '0'
         call evervim#markdownBufSetup()
     endif
-
+    " clear autosave. because when reuse buffer, autosaved(bug fix).
+    augroup evervimNote
+        autocmd!
+    augroup END
 endfunction
 "}}}
 
@@ -264,6 +264,31 @@ function! evervim#markdownBufSetup() " {{{
     hi link evervimTagBase Statement
     hi link evervimTagWord Type
 endfunction
+"}}}
+
+function! evervim#openBrowser() " {{{
+    if &ft == 'notes' || &ft == 'notesbytag' || &ft == 'notesbyquery'
+        python Evervimmer.getInstance().cursorNoteOpenBrowser()
+    else
+        python Evervimmer.getInstance().currentNoteOpenBrowser()
+    endif
+endfunction
+"}}}
+
+function! evervim#openClient() " {{{
+    if &ft == 'notes' || &ft == 'notesbytag' || &ft == 'notesbyquery'
+        python Evervimmer.getInstance().cursorNoteOpenClient()
+    else
+        python Evervimmer.getInstance().currentNoteOpenClient()
+    endif
+endfunction
+"}}}
+
+" add command {{{
+" Check OpenBrowser is installed that must be after plugin loaded, so check this.
+if exists(':OpenBrowser') == 2
+    command! EvervimOpenBrowser call evervim#openBrowser()
+endif
 "}}}
 
 python << EOF

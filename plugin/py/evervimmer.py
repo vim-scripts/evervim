@@ -3,6 +3,7 @@
 # Author: kakkyz <kakkyz81@gmail.com>
 # License: MIT
 import vim
+import subprocess
 import sys
 import traceback
 import threading
@@ -51,6 +52,7 @@ class Evervimmer(object):
         self.pref.usemarkdown          = vim.eval("g:evervim_usemarkdown")
         self.pref.asyncupdate          = vim.eval("g:evervim_asyncupdate")
         self.pref.encoding             = vim.eval('&enc')
+        self.pref.enscriptpath         = None
     # }}}
 
     def setAPI(self):  # {{{
@@ -253,7 +255,58 @@ class Evervimmer(object):
 
     #}}}
 
+    def currentNoteOpenBrowser(self):  # {{{
+        if None == Evervimmer.currentnote or None == Evervimmer.currentnote.guid:
+            return
+
+        self.__openBrowser(Evervimmer.currentnote.guid)
+    #}}}
+
+    def cursorNoteOpenBrowser(self):  # {{{
+        currentline = int(vim.eval("line('.')"))
+        if currentline < 2:
+            return
+
+        selectedNote = Evervimmer.notes[currentline - 2]
+        self.__openBrowser(selectedNote.guid)
+    #}}}
+
+    def currentNoteOpenClient(self):  # {{{
+        if None == Evervimmer.currentnote or None == Evervimmer.currentnote.guid:
+            return
+
+        self.__openClient(Evervimmer.currentnote.title)
+    #}}}
+
+    def cursorNoteOpenClient(self):  # {{{
+        currentline = int(vim.eval("line('.')"))
+        if currentline < 2:
+            return
+
+        selectedNote = Evervimmer.notes[currentline - 2]
+        self.__openClient(selectedNote.title)
+    #}}}
+
 # ----- private methods
+
+    def __openBrowser(self, guid):  # {{{
+        uri = "https://www.evernote.com/view/" + guid
+        vim.command(":OpenBrowser " + uri)
+    #}}}
+
+    def __openClient(self, title):  # {{{ NOTE:this is beta.
+        if self.pref.enscriptpath is None:
+            try:
+                import _winreg
+                reg = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\ENScript.exe')
+                self.pref.enscriptpath =  _winreg.EnumValue(reg, 0)[1].encode('shift_jis')
+            except:
+                print '_winreg error!'
+                pass
+
+        title_sjis =  unicode(title, 'utf-8', 'ignore').encode('shift_jis')
+        subprocess.Popen(self.pref.enscriptpath + " showNotes /q intitle:\"%s\"" % title_sjis)
+    #}}}
 
     def __setBufferList(self, buffertitlelist, title):  # {{{
         vim.current.buffer[:] = None   # clear buffer
@@ -280,7 +333,6 @@ class Evervimmer(object):
                 return unicode(string, self.pref.encoding).encode('utf-8')
             except:
                 return string
-
     # }}}
 
     def __changeEncodeToBuffer(self, string):  # {{{
@@ -292,6 +344,7 @@ class Evervimmer(object):
                 return unicode(string, 'utf-8').encode(self.pref.encoding)
             except:
                 return string
+    # }}}
 
     def __setNoteListPrameter(self, noteList):  # {{{
         """ set host variable from noteList """
@@ -299,3 +352,4 @@ class Evervimmer(object):
         Evervimmer.maxpages = noteList.maxpages
         Evervimmer.currentpage = noteList.currentpage
         Evervimmer.maxcount = noteList.maxcount
+    # }}}
