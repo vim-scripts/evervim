@@ -222,7 +222,7 @@ function! evervim#listBufSetup() " {{{
         exec bufnr.'wincmd w'
     else
         exec ':lcd ' . g:evervim_workdir
-        exec "vsp __EVERVIM_LIST__"
+        exec g:evervim_splitoption . "sp __EVERVIM_LIST__"
         setlocal noshowcmd
         setlocal noswapfile
         setlocal buftype=nofile
@@ -244,7 +244,7 @@ function! evervim#noteBufSetup() " {{{
     else
         " buffer is nott opened , open it.
         exec ':lcd ' . g:evervim_workdir
-        exec 'silent! rightbelow vsplit __EVERVIM_NOTE__'
+        exec 'silent! rightbelow ' . g:evervim_splitoption . 'sp __EVERVIM_NOTE__'
     endif
 
     if g:evervim_usemarkdown != '0'
